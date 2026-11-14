@@ -17,8 +17,7 @@ import storage
 
 from emojis import load_custom_emojis
 
-from apis_integration.betterstack import send_heartbeat, BOT_KEY, API_KEY, send_api_heartbeat
-from cogs.dashboard_api import API_PORT, API_HOST
+from apis_integration.betterstack import send_heartbeat, BOT_KEY, API_KEY, send_api_heartbeat, send_ai_service_heartbeat, HeartbeatError
 
 # Discord Developer Portal -> App -> Bot.
 intents = disnake.Intents.all()
