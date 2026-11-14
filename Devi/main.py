@@ -67,16 +67,40 @@ for extension in EXTENSIONS:
     bot.load_extension(extension)
 
 @tasks.loop(minutes=1)
-async def update_presence():
-    try:
-        if not _TEST_MODE:
-            if BOT_KEY:
-                await send_heartbeat()
-            if API_HOST and API_PORT and API_KEY:
-                await send_api_heartbeat()
-    except:
-        raise
+async def betterstack_heartbeat():
+    checks = [
+        ("Discord Bot", send_heartbeat),
+        ("Bot API", send_api_heartbeat),
+    ]
 
+    ai_cog = bot.get_cog("AiCog")
+
+    if ai_cog:
+        checks.append((
+            "AI Service",
+            lambda: send_ai_service_heartbeat(ai_cog.client, use_tokens=False)
+        ))
+    else:
+        print("Better Stack: AiCog is not loaded")
+
+    for name, check in checks:
+        try:
+            await check()
+            print(f"[SUCCESS] Better Stack: {name} heartbeat sent")
+
+        except HeartbeatError as e:
+            print(f"[ERROR] Better Stack: {name}: {e}")
+
+        except Exception as e:
+            print(f"[ERROR] Better Stack: Unexpected error in {name}: {e}")
+
+
+@betterstack_heartbeat.before_loop
+async def before_betterstack_heartbeat():
+    await bot.wait_until_ready()
+
+@tasks.loop(minutes=1)
+async def update_presence():
     unique_members = {
         member.id for member in bot.get_all_members() if not member.bot
     }
@@ -101,6 +125,9 @@ async def on_ready():
 
     if not update_presence.is_running():
         update_presence.start()
+
+    if not betterstack_heartbeat.is_running():
+        betterstack_heartbeat.start()
 
 if __name__ == "__main__":
     try:

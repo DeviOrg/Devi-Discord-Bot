@@ -15,7 +15,7 @@ from enum import IntEnum
 
 import aiohttp
 import disnake
-from disnake.ext import commands, tasks
+from disnake.ext import commands
 
 import i18n
 from logs import send_log, LogColor
@@ -36,7 +36,6 @@ from cogs.ai.prompts import (
 from storage import AI_SIGNAL_CHANNEL, TECHNICAL_SUPPORT_SERVER
 from apis_integration.topgg import is_voted
 from paths import env_int
-from apis_integration.betterstack import send_ai_service_heartbeat, AI_KEY as HEARTBEAT_KEY
 
 COOLDOWN_SECONDS = env_int("AI_COOLDOWN_SECONDS", 30)
 COOLDOWN_SECONDS_VOTED = env_int("AI_COOLDOWN_SECONDS_VOTED", 10)
@@ -96,17 +95,6 @@ class AiCog(commands.Cog):
 
         if not self.client.configured:
             print("⚠️ AI_API_KEY is not set - AI answers are disabled until it is added to config/.env")
-        else:
-            if HEARTBEAT_KEY:
-                self.send_heartbeat.start()
-
-    @tasks.loop(minutes=1)
-    async def send_heartbeat(self):
-        await send_ai_service_heartbeat(self.client, False)
-
-    @send_heartbeat.before_loop
-    async def before_heartbeat(self):
-        await self.bot.wait_until_ready()
 
     def cog_unload(self):
         try:

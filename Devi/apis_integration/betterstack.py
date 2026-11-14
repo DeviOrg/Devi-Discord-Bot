@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 API_HOST = env_var("DASHBOARD_API_HOST", "127.0.0.1")
 API_PORT = env_int("DASHBOARD_API_PORT", 8765)
+DASHBOARD_API_TOKEN = env_var("DASHBOARD_API_TOKEN")
 
 HEARTBEAT_URL = "https://uptime.betterstack.com/api/v1/heartbeat/"
 
@@ -27,40 +28,75 @@ class HeartbeatError(Exception):
     """Heartbeat send error"""
 
 async def send_heartbeat():
-    if not BOT_KEY:
-        raise HeartbeatError("Bot Heartbeat send error: HEARTBEAT_BOT_BETTERSTACK_KEY not set.")
+    if not HEARTBEAT_BOT_URL:
+        raise HeartbeatError("Bot heartbeat error: HEARTBEAT_BOT_BETTERSTACK_KEY not set.")
+
+    timeout = aiohttp.ClientTimeout(total=10)
 
     try:
-        timeout = aiohttp.ClientTimeout(total=10)
-
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(HEARTBEAT_BOT_URL) as response:
                 response.raise_for_status()
 
-    except Exception as e:
-        raise HeartbeatError("Bot heartbeat send error: " + str(e)) from e
+    except aiohttp.ClientResponseError as e:
+        raise HeartbeatError(f"Bot heartbeat returned HTTP {e.status}.") from None
+
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        raise HeartbeatError(f"Bot heartbeat request failed: {type(e).__name__}.") from None
 
 
 async def send_api_heartbeat():
-    if not API_HOST or not API_PORT:
-        raise HeartbeatError("API heartbeat error: API_HOST or API_PORT not configured.")
+    if not HEARTBEAT_API_URL:
+        raise HeartbeatError("API heartbeat error: HEARTBEAT_API_BETTERSTACK_KEY not set.")
 
-    if not API_KEY:
-        raise HeartbeatError("API heartbeat send error: HEARTBEAT_API_BETTERSTACK_KEY not set.")
+    timeout = aiohttp.ClientTimeout(total=10)
 
     try:
-        timeout = aiohttp.ClientTimeout(total=5)
+        if not API_CHECK_HOST:
+            raise RuntimeError("DASHBOARD_API_HOST is not configured")
+
+        if not isinstance(API_PORT, int) or not 1 <= API_PORT <= 65535:
+            raise RuntimeError("Invalid DASHBOARD_API_PORT")
+
+        if not DASHBOARD_API_TOKEN:
+            raise RuntimeError("DASHBOARD_API_TOKEN is not configured")
+
+        host = API_CHECK_HOST.strip()
+
+        if ":" in host and not host.startswith("["):
+            host = f"[{host}]"
+
+        api_url = f"http://{host}:{API_PORT}/v1/ping"
+
+        headers = {
+            "Authorization": f"Bearer {DASHBOARD_API_TOKEN}",
+            "Accept": "application/json",
+        }
 
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.get(f"http://{API_CHECK_HOST}:{API_PORT}/v1/ping") as response:
+
+            async with session.get(api_url, headers=headers, allow_redirects=False) as response:
                 if response.status != 200:
-                    raise RuntimeError(f"Bot API returned HTTP {response.status}")
+                    raise RuntimeError(f"Dashboard API returned HTTP {response.status}")
+
+                data = await response.json(content_type=None)
+
+                if not isinstance(data, dict) or data.get("ok") is not True:
+                    raise RuntimeError("Dashboard API returned an invalid health response")
 
             async with session.get(HEARTBEAT_API_URL) as response:
                 response.raise_for_status()
 
     except Exception as e:
-        raise HeartbeatError("API heartbeat send error: " + str(e)) from e
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(f"{HEARTBEAT_API_URL}/fail") as response:
+                    response.raise_for_status()
+
+        except Exception as report_error:
+            raise HeartbeatError(f"API check failed: {e}; failed to report failure: {report_error}") from e
+
+        raise HeartbeatError(f"API heartbeat error: {e}") from e
 
 async def send_ai_service_heartbeat(ai_client: "AiClient", use_tokens: bool = False):
     if not HEARTBEAT_AI_URL:

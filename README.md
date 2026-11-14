@@ -42,13 +42,16 @@ The bot is configured via `config/.env`. Two parallel sets of values are support
 | `TECHNICAL_SUPPORT_SERVER` / `TECHNICAL_SUPPORT_SERVER_TEST` | Guild ID used for support-related features.                                                                                     |
 | `AI_SIGNAL_CHANNEL` / `AI_SIGNAL_CHANNEL_TEST`               | Channel ID the AI cog uses for status/signal messages.                                                                          |
 | `TEST_SERVER`                                                | Guild ID used to register commands instantly while developing (guild-scoped commands sync immediately, unlike global commands). |
-| `DATABASE_URL`                                               | URL to PostgreSQL DB                                                                                                            |
-| `ENCRYPTION_KEY`                                             | Key for [encryption](#-data-parsing-and-encryption)                                                                             |
-| `TOP_GG_TOKEN`                                               | [Top.gg API token](#-other-apis-integration)                                                                                    |
+| `DATABASE_URL`                                               | URL to PostgreSQL DB.                                                                                                           |
+| `ENCRYPTION_KEY`                                             | Key for [encryption](#-data-parsing-and-encryption).                                                                            |
+| `TOP_GG_TOKEN`                                               | [Top.gg API token](#topgg-api-apis_integrationtopggpy).                                                                         |
 | `DASHBOARD_API_TOKEN`                                        | Shared secret of the [dashboard API](#-dashboard-api-cogsdashboard_apipy) (24+ characters). Empty — the API is off.             |
 | `DASHBOARD_API_HOST` / `DASHBOARD_API_PORT`                  | Address the dashboard API listens on. Default `127.0.0.1:8765`.                                                                 |
 | `AI_PROVIDER`                                                | `proxyapi` (default), `deepseek` or `qwen`. See [AI](#-ai-cogsai).                                                              |
 | `AI_API_KEY`                                                 | The single API key shared by all servers and users. All other `AI_*` settings are optional, see [AI](#-ai-cogsai).              |
+| `HEARTBEAT_BOT_BETTERSTACK_KEY`                              | [Better Stack heartbeat key](#better-stack-apis_integrationbetterstackpy) for the Discord bot.                                  |
+| `HEARTBEAT_API_BETTERSTACK_KEY`                              | [Better Stack heartbeat key](#better-stack-apis_integrationbetterstackpy) for the Dashboard API.                                |
+| `HEARTBEAT_AI_BETTERSTACK_KEY`                               | [Better Stack heartbeat key](#better-stack-apis_integrationbetterstackpy) for the AI provider.                                  |
 
 > ⚠️ `TEST_ENABLED` is read as a raw string and compared case-insensitively against `1`/`true`/`yes`/`on`. Any other non-empty value (including the literal string `"False"`) is treated as **disabled** — double-check this variable if the bot boots in the wrong mode.
 
@@ -351,6 +354,78 @@ max_count, ad = await vote_value(user, MAX_COUNT_VOTED, MAX_COUNT, locale=locale
 if count > max_count:
     return inter.response.send_message(i18n.t("...", locale=locale) + ad)
 ```
+### [Better Stack](https://betterstack.com/uptime) `apis_integration/betterstack.py`
+
+Monitors Devi's infrastructure using [Better Stack Heartbeats](https://betterstack.com/docs/uptime/heartbeat-monitoring/). Each heartbeat is independent and reports the availability of its own service.
+
+#### Configuration
+
+Create a separate Heartbeat Monitor in Better Stack for each service and add its generated key to `config/.env`:
+
+| Variable                        | Description                   |
+|---------------------------------|-------------------------------|
+| `HEARTBEAT_BOT_BETTERSTACK_KEY` | Discord bot process heartbeat |
+| `HEARTBEAT_API_BETTERSTACK_KEY` | Dashboard API heartbeat       |
+| `HEARTBEAT_AI_BETTERSTACK_KEY`  | AI provider heartbeat         |
+
+The integration reads the Dashboard API address from the existing configuration
+
+#### Functions
+
+##### `send_heartbeat()`
+
+Sends one successful heartbeat for the Discord bot. Call it from the bot's background monitoring task.
+
+##### `send_api_heartbeat()`
+
+Checks the Dashboard API locally using `GET /v1/ping`. Sends a successful heartbeat only if the API responds with HTTP `200`.
+
+The API is checked directly over the local interface, so it does not depend on the website or its Nginx configuration.
+
+##### `send_ai_service_heartbeat(ai_client: AiClient, use_tokens: bool = False)`
+
+Checks the configured AI provider and reports its availability.
+
+| `use_tokens`      | Behaviour                                                                                                                                                         |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `False` (default) | Requests the provider's `/models` endpoint and verifies that both configured text and vision models are listed. Does not generate a completion or consume tokens. |
+| `True`            | Sends a real chat completion request through `AiClient.chat()` to verify text generation. This consumes provider tokens.                                          |
+
+The AI check also verifies that the client is configured and not temporarily blocked.
+
+#### Failure reporting
+
+All heartbeat functions send a normal heartbeat when their checks succeed.
+
+When a service check fails, the integration sends a `/fail` request to Better Stack and raises `HeartbeatError`. The exception should be caught by the caller and logged without terminating the bot.
+
+A successful heartbeat after a failure reports service recovery.
+
+#### Usage example
+
+```python
+from apis_integration.betterstack import (
+    send_heartbeat,
+    send_api_heartbeat,
+    send_ai_service_heartbeat,
+    HeartbeatError,
+)
+
+# Discord bot
+await send_heartbeat()
+
+# Dashboard API
+await send_api_heartbeat()
+
+# AI provider (no token-consuming generation)
+ai_cog = bot.get_cog("AiCog")
+if ai_cog:
+    await send_ai_service_heartbeat(ai_cog.client)
+```
+
+These functions perform a single check per invocation. They do not create background tasks or schedule periodic requests. Run them from a monitoring task at an interval matching the Heartbeat Monitor's configured check interval and grace period.
+
+> **Note:** The AI `/models` check confirms API authentication and model-list availability, but does not guarantee that the provider can currently generate a completion. Use `use_tokens=True` for an actual generation check.
 
 ---
 
