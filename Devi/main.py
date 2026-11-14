@@ -1,6 +1,11 @@
 import os
 from dotenv import load_dotenv
 
+import paths
+from paths import ENV_FILE, env_bool, env_var
+
+load_dotenv(ENV_FILE)
+
 import disnake
 import platform
 from disnake.ext import commands, tasks
@@ -12,10 +17,8 @@ import storage
 
 from emojis import load_custom_emojis
 
-import paths
-from paths import ENV_FILE, env_bool, env_var
-
-load_dotenv(ENV_FILE)
+from apis_integration.betterstack import send_heartbeat, BOT_KEY, API_KEY, send_api_heartbeat
+from cogs.dashboard_api import API_PORT, API_HOST
 
 # Discord Developer Portal -> App -> Bot.
 intents = disnake.Intents.all()
@@ -65,6 +68,15 @@ for extension in EXTENSIONS:
 
 @tasks.loop(minutes=1)
 async def update_presence():
+    try:
+        if not _TEST_MODE:
+            if BOT_KEY:
+                await send_heartbeat()
+            if API_HOST and API_PORT and API_KEY:
+                await send_api_heartbeat()
+    except:
+        raise
+
     unique_members = {
         member.id for member in bot.get_all_members() if not member.bot
     }
