@@ -566,7 +566,7 @@
         "additional_field": "Додатково",
         "outro": {
             "title": ":blue_book: Корисна інформація",
-            "value": "[Сервер підтримки](https://discord.gg/ftUm7FbJDw) | [Політика конфіденційності](https://gist.github.com/security-camera/c1c4ffc74fb2407b06044e4ab8607e71) | [Умови користування](https://gist.github.com/security-camera/147e20418f9528e2e64d5e9e87c40977) | [Github](https://github.com/security-camera/Devi-Discord-Bot) | [Сайт](https://devi-discord-bot.duckdns.org:8443/)"
+            "value": "[Сервер підтримки](https://discord.gg/ftUm7FbJDw) | [Політика конфіденційності](https://gist.github.com/security-camera/c1c4ffc74fb2407b06044e4ab8607e71) | [Умови користування](https://gist.github.com/security-camera/147e20418f9528e2e64d5e9e87c40977) | [Github](https://github.com/DeviOrg) | [Сайт](https://devi-discord-bot.duckdns.org/) | [Стан сервісів](https://devi-status.betteruptime.com/)"
         },
         "monitorings": {
             "title": ":mag: Бот на моніторингах",

@@ -555,6 +555,8 @@ Prices used for the estimate are per 1M tokens in the provider's currency: `AI_P
 bot_project/
 ├── README.md
 ├── LICENSE.md
+├── CONTRIBUTING.md
+├── SECURITY.md
 ├── .gitignore
 └── Devi/                          # Core directory
     ├── main.py                    # Entry point

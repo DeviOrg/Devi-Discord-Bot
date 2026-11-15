@@ -566,7 +566,7 @@
         "additional_field": "Lisätietoa",
         "outro": {
             "title": ":blue_book: Hyödyllistä tietoa",
-            "value": "[Tukipalvelin](https://discord.gg/ftUm7FbJDw) | [Tietosuojakäytäntö](https://gist.github.com/security-camera/c1c4ffc74fb2407b06044e4ab8607e71) | [Käyttöehdot](https://gist.github.com/security-camera/147e20418f9528e2e64d5e9e87c40977) | [Github](https://github.com/security-camera/Devi-Discord-Bot) | [Sivusto](https://devi-discord-bot.duckdns.org:8443/)"
+            "value": "[Tukipalvelin](https://discord.gg/ftUm7FbJDw) | [Tietosuojakäytäntö](https://gist.github.com/security-camera/c1c4ffc74fb2407b06044e4ab8607e71) | [Käyttöehdot](https://gist.github.com/security-camera/147e20418f9528e2e64d5e9e87c40977) | [Github](https://github.com/DeviOrg) | [Sivusto](https://devi-discord-bot.duckdns.org/) | [Palveluiden tila](https://devi-status.betteruptime.com/)"
         },
         "monitorings": {
             "title": ":mag: Botti seurantapalveluissa",
