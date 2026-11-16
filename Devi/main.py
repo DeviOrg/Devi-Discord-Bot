@@ -17,7 +17,7 @@ import storage
 
 from emojis import load_custom_emojis
 
-from apis_integration.betterstack import send_heartbeat, BOT_KEY, API_KEY, send_api_heartbeat, send_ai_service_heartbeat, HeartbeatError
+from apis_integration.betterstack import send_heartbeat, send_db_heartbeat, send_api_heartbeat, send_ai_service_heartbeat, HeartbeatError
 
 # Discord Developer Portal -> App -> Bot.
 intents = disnake.Intents.all()
@@ -70,6 +70,7 @@ async def betterstack_heartbeat():
     checks = [
         ("Discord Bot", send_heartbeat),
         ("Bot API", send_api_heartbeat),
+        ("DB", send_db_heartbeat),
     ]
 
     ai_cog = bot.get_cog("AiCog")

@@ -1,4 +1,5 @@
 import aiohttp
+import asyncio
 
 from paths import env_var, env_int
 from typing import TYPE_CHECKING
@@ -20,6 +21,9 @@ HEARTBEAT_API_URL = HEARTBEAT_URL + API_KEY if API_KEY else None
 
 AI_KEY = env_var("HEARTBEAT_AI_BETTERSTACK_KEY")
 HEARTBEAT_AI_URL = HEARTBEAT_URL + AI_KEY if AI_KEY else None
+
+DB_KEY = env_var("HEARTBEAT_DB_BETTERSTACK_KEY")
+HEARTBEAT_DB_URL = HEARTBEAT_URL + DB_KEY if DB_KEY else None
 
 API_CHECK_HOST = ("127.0.0.1" if API_HOST in ("0.0.0.0", "::") else API_HOST)
 
@@ -192,3 +196,41 @@ async def send_ai_service_heartbeat(ai_client: "AiClient", use_tokens: bool = Fa
 
     except Exception as e:
         raise HeartbeatError(f"AI heartbeat send error: {e}") from e
+
+def _check_db():
+    import psycopg
+    from db import get_dsn
+
+    with psycopg.connect(get_dsn(), connect_timeout=5, options="-c statement_timeout=5000") as connection:
+        result = connection.execute("SELECT 1").fetchone()
+
+        if result != (1,):
+            raise RuntimeError("DB returned an unexpected result.")
+
+async def send_db_heartbeat():
+    if not HEARTBEAT_DB_URL:
+        raise HeartbeatError("DB heartbeat error: HEARTBEAT_DB_BETTERSTACK_KEY not set.")
+
+    timeout = aiohttp.ClientTimeout(total=10)
+
+    try:
+        await asyncio.wait_for(asyncio.to_thread(_check_db), timeout=12)
+
+    except Exception as e:
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(f"{HEARTBEAT_DB_URL}/fail") as response:
+                    response.raise_for_status()
+
+        except Exception as report_error:
+            raise HeartbeatError(f"DB check failed: {e}; failed to report failure: {report_error}") from e
+
+        raise HeartbeatError(f"DB check failed: {type(e).__name__}: {e}") from e
+
+    try:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(HEARTBEAT_DB_URL) as response:
+                response.raise_for_status()
+
+    except Exception as e:
+        raise HeartbeatError(f"DB heartbeat send error: {e}") from e
