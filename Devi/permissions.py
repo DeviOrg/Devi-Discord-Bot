@@ -39,6 +39,7 @@ class Permission(IntFlag):
     MusicBlackList = 1 << 9
     ManageHoneypots = 1 << 10
     ManageLogs = 1 << 11
+    ManageStickyRoles = 1 << 12
 
     Admin = (
             ManageMention
@@ -50,6 +51,7 @@ class Permission(IntFlag):
             | Warnings
             | ManageLogs
             | ManageHoneypots
+            | ManageStickyRoles
     )
 
 

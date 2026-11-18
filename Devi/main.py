@@ -59,7 +59,8 @@ EXTENSIONS = [
     "cogs.dashboard_api",
     "cogs.quotes",
     "cogs.gif",
-    "cogs.captions"
+    "cogs.captions",
+    "cogs.sticky_roles",
 ]
 
 for extension in EXTENSIONS:
@@ -126,7 +127,7 @@ async def on_ready():
     if not update_presence.is_running():
         update_presence.start()
 
-    if not betterstack_heartbeat.is_running():
+    if not betterstack_heartbeat.is_running() and not _TEST_MODE:
         betterstack_heartbeat.start()
 
 if __name__ == "__main__":

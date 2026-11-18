@@ -21,7 +21,7 @@ COMMAND_MENTIONS = {}
 HELP_SECTIONS = [
     "mention", "triggers", "utils", "messages", "voice", "ai", "admin",
     "warns", "giveaway", "music", "birthdays", "temp_voices", "security",
-    "permissions",
+    "permissions", "sticky_roles",
 ]
 
 

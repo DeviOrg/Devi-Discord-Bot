@@ -60,9 +60,6 @@ class ClearCog(commands.Cog):
                 return await inter.response.send_message(error, ephemeral=True)
             after_time = datetime.now(timezone.utc) - delta
 
-        if not isinstance(inter.channel, (disnake.TextChannel, disnake.Thread)):
-            return await inter.response.send_message(i18n.t("clear_cmd.wrong_channel_type", locale=gid), ephemeral=True)
-
         def check(msg: disnake.Message) -> bool:
             if member is not None and msg.author.id != member.id:
                 return False

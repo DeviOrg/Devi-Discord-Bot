@@ -19,6 +19,7 @@ Access mirrors the slash commands:
     triggers                                                -> bot.ManageTriggers or Discord "Administrator"
     honeypot                                      -> bot.ManageHoneypots or Discord "Administrator"
     logs                                          -> bot.ManageLogs or Discord "Administrator"
+    sticky_roles                                  -> bot.ManageStickyRoles or Discord "Administrator"
 
 All snowflake ids are sent as strings: JavaScript cannot hold 64-bit integers.
 """
@@ -59,7 +60,7 @@ API_HOST = env_var("DASHBOARD_API_HOST", "127.0.0.1")
 API_PORT = env_int("DASHBOARD_API_PORT", 8765)
 MIN_TOKEN_LENGTH = 24
 
-SECTIONS = ("permissions", "logs", "birthdays", "voice", "honeypot", "triggers", "language")
+SECTIONS = ("permissions", "logs", "birthdays", "voice", "honeypot", "sticky_roles", "triggers", "language")
 ADMIN_SECTIONS = {"permissions", "birthdays", "voice", "language"}
 
 MAX_TRIGGERS_PER_GUILD = 100
@@ -68,6 +69,7 @@ MAX_PATTERN_LENGTH = 500
 MAX_RESPONSE_LENGTH = 2000  # Discord message limit
 MAX_NAME_TEMPLATE_LENGTH = 100  # Discord channel name limit
 MAX_PERMISSION_CHANGES = 25
+MAX_STICKY_ROLES = 250  # Discord allows at most 250 roles per server
 MEMBER_SEARCH_LIMIT = 10
 MAX_BODY_BYTES = 64 * 1024
 MAX_PUNISHMENT_SECONDS = 10 * 365 * 24 * 60 * 60  # keeps "now + duration" far away from datetime's limits
@@ -179,6 +181,8 @@ def _sections_for(member) -> set[str]:
         sections |= ADMIN_SECTIONS
     if has_permissions(member, _NO_CHANNEL, Permission.ManageHoneypots):
         sections.add("honeypot")
+    if has_permissions(member, _NO_CHANNEL, Permission.ManageStickyRoles):
+        sections.add("sticky_roles")
     if has_permissions(member, _NO_CHANNEL, Permission.ManageTriggers):
         sections.add("triggers")
     if has_permissions(member, _NO_CHANNEL, Permission.ManageLogs):
@@ -345,6 +349,16 @@ def _serialize_honeypot(guild, cog) -> dict:
     }
 
 
+def _serialize_sticky_roles(guild, cog) -> dict:
+    me = guild.me
+    return {
+        "enabled": cog.is_enabled(guild.id),
+        "role_ids": [str(role_id) for role_id in cog.get_roles(guild.id)],  # empty = every role is remembered
+        "max_roles": MAX_STICKY_ROLES,
+        "bot_can_manage": bool(me and me.guild_permissions.manage_roles),
+    }
+
+
 def _serialize_language(guild) -> dict:
     return {
         "locale": i18n.resolve_locale_code(get_localization(guild.id)),
@@ -387,6 +401,12 @@ class DashboardApi:
         cog = self.bot.get_cog("HoneypotCog")
         if cog is None:
             raise ApiError(503, "honeypot_unavailable")
+        return cog
+
+    def sticky_roles_cog(self):
+        cog = self.bot.get_cog("StickyRolesCog")
+        if cog is None:
+            raise ApiError(503, "sticky_roles_unavailable")
         return cog
 
     @staticmethod
@@ -458,6 +478,10 @@ class DashboardApi:
         if honeypot is None:  # the cog is switched off: do not offer a section that cannot work
             sections = sections - {"honeypot"}
 
+        sticky_roles = self.bot.get_cog("StickyRolesCog")
+        if sticky_roles is None:
+            sections = sections - {"sticky_roles"}
+
         settings: dict = {}
         if "logs" in sections:
             settings["logs"] = {"channel_id": _sid(get_log_channel_id(guild.id))}
@@ -472,6 +496,8 @@ class DashboardApi:
             settings["permissions"] = _serialize_permissions(guild)
         if "honeypot" in sections:
             settings["honeypot"] = _serialize_honeypot(guild, honeypot)
+        if "sticky_roles" in sections:
+            settings["sticky_roles"] = _serialize_sticky_roles(guild, sticky_roles)
         if "language" in sections:
             settings["language"] = _serialize_language(guild)
         if "triggers" in sections:
@@ -496,7 +522,7 @@ class DashboardApi:
 
         # Channel and role names are only for people who configure the bot; a triggers-only
         # editor does not need to see private channels.
-        if sections & (ADMIN_SECTIONS | {"honeypot", "logs"}):
+        if sections & (ADMIN_SECTIONS | {"honeypot", "logs", "sticky_roles"}):
             data["channels"], data["categories"] = _serialize_channels(guild)
             data["roles"] = _serialize_roles(guild)
 
@@ -612,6 +638,35 @@ class DashboardApi:
 
         await self.audit(guild, member, "honeypot", details)
         return web.json_response(_serialize_honeypot(guild, cog))
+
+    async def put_sticky_roles(self, request: web.Request) -> web.Response:
+        guild, member, _ = await self.context(request, "sticky_roles")
+        body = await _read_json(request)
+        cog = self.sticky_roles_cog()
+
+        enabled = body.get("enabled")
+        raw_roles = body.get("role_ids", [])
+        if not isinstance(enabled, bool) or not isinstance(raw_roles, list) or len(raw_roles) > MAX_STICKY_ROLES:
+            raise ApiError(400, "invalid_body")
+
+        role_ids: list[int] = []
+        for raw in raw_roles:
+            role = guild.get_role(_parse_id(raw, code="invalid_role"))
+            # Same rules as /sticky_roles add: never @everyone, integration roles or roles above the bot.
+            # A role that is already listed may be kept even if it became unassignable since.
+            keep = role is not None and role.id in cog.get_roles(guild.id)
+            if role is None or role.is_default() or role.managed or not (keep or _can_assign(guild, role)):
+                raise ApiError(400, "invalid_role")
+            if role.id not in role_ids:
+                role_ids.append(role.id)
+
+        cog.configure(guild.id, enabled, role_ids)
+
+        details = ("✅ " if enabled else "⛔ ") + (
+            " ".join(f"<@&{role_id}>" for role_id in role_ids) if role_ids else "—"
+        )
+        await self.audit(guild, member, "sticky_roles", details)
+        return web.json_response(_serialize_sticky_roles(guild, cog))
 
     async def put_language(self, request: web.Request) -> web.Response:
         guild, member, _ = await self.context(request, "language")
@@ -878,6 +933,7 @@ def build_app(bot: commands.Bot, token: str | None = None) -> web.Application:
         web.put("/v1/guilds/{guild_id}/birthday-channel", api.put_birthday_channel),
         web.put("/v1/guilds/{guild_id}/temp-voice", api.put_temp_voice),
         web.put("/v1/guilds/{guild_id}/honeypot", api.put_honeypot),
+        web.put("/v1/guilds/{guild_id}/sticky-roles", api.put_sticky_roles),
         web.put("/v1/guilds/{guild_id}/language", api.put_language),
         web.patch("/v1/guilds/{guild_id}/permissions", api.patch_permissions),
         web.get("/v1/guilds/{guild_id}/members", api.search_members),

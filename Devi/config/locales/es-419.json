@@ -56,7 +56,8 @@
                 "Warnings": "Advertencias (bot.Warnings)",
                 "MusicBlackList": "Lista negra de música (bot.MusicBlackList)",
                 "ManageLogs": "Administración de registros (bot.ManageLogs)",
-                "ManageHoneypots": "Administración de honeypots (bot.ManageHoneypots)"
+                "ManageHoneypots": "Administración de honeypots (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Administrar roles persistentes (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Agregar un título"
+        },
+        "sticky_roles": {
+            "description": "Administra los roles persistentes (restaura los roles cuando un miembro vuelve a entrar)."
+        },
+        "sticky_roles_enable": {
+            "description": "Activa o desactiva los roles persistentes en este servidor.",
+            "param_enable_name": "activar",
+            "param_enable": "True: activar, False: desactivar (por defecto: False)."
+        },
+        "sticky_roles_add": {
+            "description": "Agrega un rol a la lista de roles que se conservan.",
+            "param_role_name": "rol",
+            "param_role": "El rol que se conservará."
+        },
+        "sticky_roles_remove": {
+            "description": "Quita un rol de la lista de roles que se conservan.",
+            "param_role_name": "rol",
+            "param_role": "El rol que ya no se conservará."
+        },
+        "sticky_roles_list": {
+            "description": "Muestra la configuración y la lista de roles que se conservan."
         }
     },
     "help": {
@@ -635,6 +657,11 @@
             "developer": {
                 "name": "Desarrollador",
                 "value": "• /guild_info\n• /ai_debug\n• /birthday_congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Roles persistentes",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**¿Qué son los roles persistentes?**\nCuando un miembro sale del servidor, el bot recuerda sus roles y se los devuelve cuando vuelve a entrar.\n\n**¿Cómo configurarlo?**\n1. Actívalo: /sticky_roles enable\n2. Por defecto se conservan **todos** los roles. Para conservar solo algunos, agrégalos con /sticky_roles add. Cuando la lista vuelva a estar vacía, se conservan todos.\n\nEl bot necesita el permiso «Administrar roles» y solo puede dar roles por debajo de su rol más alto. Los roles de integraciones y los roles temporales nunca se restauran."
             }
         }
     },
@@ -1317,7 +1344,8 @@
             "voice": "Canales de voz temporales",
             "triggers": "Disparadores",
             "honeypot": "Canal trampa",
-            "language": "Idioma"
+            "language": "Idioma",
+            "sticky_roles": "Roles persistentes"
         }
     },
     "playlist_cog": {
@@ -1401,6 +1429,32 @@
             "on": "Sobre el meme",
             "top": "Arriba",
             "bottom": "Abajo"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Los roles persistentes están activados.",
+        "disabled": ";mark; Los roles persistentes están desactivados. Se eliminaron los roles guardados de antiguos miembros.",
+        "bot_missing_manage_roles": ";warning; El bot no tiene el permiso «Administrar roles», así que todavía no puede restaurar roles.",
+        "role_not_allowed": ";no; Este rol no se puede conservar (@everyone y los roles de integraciones no son compatibles).",
+        "role_too_high_for_bot": ";no; El bot no puede devolver {role}: no está por debajo de su rol más alto.",
+        "already_in_list": ";no; {role} ya está en la lista.",
+        "role_added": ";mark; {role} se agregó a la lista.",
+        "not_in_list": ";no; {role} no está en la lista.",
+        "role_removed": ";mark; {role} se quitó de la lista.",
+        "list_now_empty": ";warning; La lista quedó vacía, así que se conservan **todos** los roles.",
+        "list_title": ";theater_masks; Roles persistentes",
+        "field_status": "Estado",
+        "field_roles": "Roles que se conservan",
+        "status_on": "Activado",
+        "status_off": "Desactivado",
+        "mode_all": "Se conservan todos los roles (la lista está vacía).",
+        "unknown_role": "rol desconocido",
+        "footer_unassignable": "⚠️ — el bot no puede dar este rol (no está por debajo de su rol más alto o falta «Administrar roles»).",
+        "audit_reason": "Roles persistentes: el miembro volvió",
+        "logs": {
+            "restored_title": ";theater_masks; Roles restaurados",
+            "failed_title": ";warning; No se pudieron restaurar los roles",
+            "no_manage_roles": "El bot no tiene el permiso «Administrar roles»."
         }
     }
 }

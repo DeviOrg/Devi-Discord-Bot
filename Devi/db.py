@@ -313,6 +313,30 @@ CREATE TABLE IF NOT EXISTS playlist_tracks (
     UNIQUE (playlist_id, uri)
 );
 CREATE INDEX IF NOT EXISTS idx_playlist_tracks_playlist_pos ON playlist_tracks(playlist_id, position, id);
+
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    name TEXT PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS sticky_roles_config (
+    guild_id BIGINT PRIMARY KEY,
+    enabled BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS sticky_roles_list (
+    guild_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (guild_id, role_id)
+);
+
+CREATE TABLE IF NOT EXISTS sticky_roles_saved (
+    guild_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    role_ids BIGINT[] NOT NULL,
+    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (guild_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_sticky_roles_saved_at ON sticky_roles_saved(saved_at);
 """
 
 
@@ -324,5 +348,19 @@ def init():
 
     with db_cursor(commit=True) as cur:
         cur.execute(SCHEMA)
+
+        # One-time migration: bot.Admin now includes ManageStickyRoles (1 << 12). Admin grants
+        # stored before that lack the new bit and would stop counting as "Admin".
+        # Old Admin mask = 3517. The marker makes sure this runs only once, so a later
+        # deliberate removal of the bit is not undone on the next restart.
+        cur.execute(
+            "INSERT INTO schema_migrations (name) VALUES ('admin_sticky_roles_bit') "
+            "ON CONFLICT DO NOTHING RETURNING name"
+        )
+        if cur.fetchone():
+            cur.execute(
+                "UPDATE permission_grants SET value = value | 4096 "
+                "WHERE (value & 3517) = 3517 AND (value & 4096) = 0"
+            )
 
     _initialized = True

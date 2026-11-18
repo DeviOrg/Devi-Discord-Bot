@@ -56,7 +56,8 @@
                 "Warnings": "Verwarnungen (bot.Warnings)",
                 "MusicBlackList": "Musik-Sperrliste (bot.MusicBlackList)",
                 "ManageLogs": "Log-Verwaltung (bot.ManageLogs)",
-                "ManageHoneypots": "Honeypot-Verwaltung (bot.ManageHoneypots)"
+                "ManageHoneypots": "Honeypot-Verwaltung (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Persistente Rollen verwalten (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Medien beschriften"
+        },
+        "sticky_roles": {
+            "description": "Persistente Rollen verwalten (Rollen nach erneutem Beitritt wiederherstellen)."
+        },
+        "sticky_roles_enable": {
+            "description": "Persistente Rollen auf diesem Server ein- oder ausschalten.",
+            "param_enable_name": "aktivieren",
+            "param_enable": "True - einschalten, False - ausschalten (Standard: False)."
+        },
+        "sticky_roles_add": {
+            "description": "Eine Rolle zur Liste der gespeicherten Rollen hinzufügen.",
+            "param_role_name": "rolle",
+            "param_role": "Die Rolle, die gespeichert werden soll."
+        },
+        "sticky_roles_remove": {
+            "description": "Eine Rolle aus der Liste der gespeicherten Rollen entfernen.",
+            "param_role_name": "rolle",
+            "param_role": "Die Rolle, die nicht mehr gespeichert werden soll."
+        },
+        "sticky_roles_list": {
+            "description": "Einstellungen und Liste der gespeicherten Rollen anzeigen."
         }
     },
     "help": {
@@ -634,6 +656,11 @@
             "developer": {
                 "name": "Entwickler",
                 "value": "• /guild_info\n• /ai debug\n• /birthday congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Persistente Rollen",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**Was sind persistente Rollen?**\nVerlässt ein Mitglied den Server, merkt sich der Bot seine Rollen und gibt sie zurück, sobald das Mitglied wiederkommt.\n\n**Einrichtung**\n1. Einschalten: /sticky_roles enable\n2. Standardmäßig werden **alle** Rollen gespeichert. Um nur bestimmte zu speichern, füge sie mit /sticky_roles add hinzu. Ist die Liste wieder leer, werden alle Rollen gespeichert.\n\nDer Bot braucht die Berechtigung „Rollen verwalten“ und kann nur Rollen unterhalb seiner höchsten Rolle vergeben. Integrationsrollen und temporäre Rollen werden nie wiederhergestellt."
             }
         }
     },
@@ -1316,7 +1343,8 @@
             "voice": "Temporäre Sprachkanäle",
             "triggers": "Trigger",
             "honeypot": "Fallenkanal",
-            "language": "Sprache"
+            "language": "Sprache",
+            "sticky_roles": "Persistente Rollen"
         }
     },
     "playlist_cog": {
@@ -1400,6 +1428,32 @@
             "on": "Auf dem Meme",
             "top": "Oben",
             "bottom": "Unten"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Persistente Rollen sind aktiviert.",
+        "disabled": ";mark; Persistente Rollen sind deaktiviert. Gespeicherte Rollen ehemaliger Mitglieder wurden gelöscht.",
+        "bot_missing_manage_roles": ";warning; Dem Bot fehlt die Berechtigung „Rollen verwalten“, daher kann er noch keine Rollen wiederherstellen.",
+        "role_not_allowed": ";no; Diese Rolle kann nicht gespeichert werden (@everyone und Integrationsrollen werden nicht unterstützt).",
+        "role_too_high_for_bot": ";no; Der Bot kann {role} nicht zurückgeben: Die Rolle liegt nicht unter seiner höchsten Rolle.",
+        "already_in_list": ";no; {role} ist bereits in der Liste.",
+        "role_added": ";mark; {role} wurde zur Liste hinzugefügt.",
+        "not_in_list": ";no; {role} ist nicht in der Liste.",
+        "role_removed": ";mark; {role} wurde aus der Liste entfernt.",
+        "list_now_empty": ";warning; Die Liste ist jetzt leer, daher werden **alle** Rollen gespeichert.",
+        "list_title": ";theater_masks; Persistente Rollen",
+        "field_status": "Status",
+        "field_roles": "Gespeicherte Rollen",
+        "status_on": "Aktiviert",
+        "status_off": "Deaktiviert",
+        "mode_all": "Alle Rollen werden gespeichert (die Liste ist leer).",
+        "unknown_role": "unbekannte Rolle",
+        "footer_unassignable": "⚠️ — der Bot kann diese Rolle nicht vergeben (sie liegt nicht unter seiner höchsten Rolle oder „Rollen verwalten“ fehlt).",
+        "audit_reason": "Persistente Rollen: Mitglied ist zurückgekehrt",
+        "logs": {
+            "restored_title": ";theater_masks; Rollen wiederhergestellt",
+            "failed_title": ";warning; Rollen konnten nicht wiederhergestellt werden",
+            "no_manage_roles": "Dem Bot fehlt die Berechtigung „Rollen verwalten“."
         }
     }
 }

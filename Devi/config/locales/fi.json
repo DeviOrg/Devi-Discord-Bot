@@ -56,7 +56,8 @@
                 "Warnings": "Varoitukset (bot.Warnings)",
                 "MusicBlackList": "Musiikin mustalista (bot.MusicBlackList)",
                 "ManageLogs": "Lokijärjestelmän hallinta (bot.ManageLogs)",
-                "ManageHoneypots": "Honeypot-kanavien hallinta (bot.ManageHoneypots)"
+                "ManageHoneypots": "Honeypot-kanavien hallinta (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Hallitse säilyviä rooleja (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Lisää kuvateksti mediaan"
+        },
+        "sticky_roles": {
+            "description": "Hallitse säilyviä rooleja (palauta roolit, kun jäsen liittyy uudelleen)."
+        },
+        "sticky_roles_enable": {
+            "description": "Ota säilyvät roolit käyttöön tai pois käytöstä tällä palvelimella.",
+            "param_enable_name": "käytössä",
+            "param_enable": "True - käyttöön, False - pois käytöstä (oletus: False)."
+        },
+        "sticky_roles_add": {
+            "description": "Lisää rooli säilytettävien roolien luetteloon.",
+            "param_role_name": "rooli",
+            "param_role": "Rooli, joka säilytetään."
+        },
+        "sticky_roles_remove": {
+            "description": "Poista rooli säilytettävien roolien luettelosta.",
+            "param_role_name": "rooli",
+            "param_role": "Rooli, jota ei enää säilytetä."
+        },
+        "sticky_roles_list": {
+            "description": "Näytä säilyvien roolien asetukset ja luettelo."
         }
     },
     "help": {
@@ -635,6 +657,11 @@
             "developer": {
                 "name": "Kehittäjä",
                 "value": "• /guild_info\n• /ai_debug\n• /birthday_congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Säilyvät roolit",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**Mitä säilyvät roolit ovat?**\nKun jäsen poistuu palvelimelta, botti muistaa hänen roolinsa ja antaa ne takaisin, kun jäsen palaa.\n\n**Käyttöönotto**\n1. Ota käyttöön: /sticky_roles enable\n2. Oletuksena säilytetään **kaikki** roolit. Jos haluat säilyttää vain tietyt, lisää ne komennolla /sticky_roles add. Kun luettelo on taas tyhjä, kaikki roolit säilytetään.\n\nBotti tarvitsee Hallitse rooleja -oikeuden ja voi antaa vain omaa korkeinta rooliaan alempia rooleja. Integraatioroolit ja väliaikaiset roolit eivät koskaan palaudu."
             }
         }
     },
@@ -1317,7 +1344,8 @@
             "voice": "Väliaikaiset äänikanavat",
             "triggers": "Triggerit",
             "honeypot": "Ansakanava",
-            "language": "Kieli"
+            "language": "Kieli",
+            "sticky_roles": "Säilyvät roolit"
         }
     },
     "playlist_cog": {
@@ -1401,6 +1429,32 @@
             "on": "Meemin päällä",
             "top": "Ylhäällä",
             "bottom": "Alhaalla"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Säilyvät roolit on otettu käyttöön.",
+        "disabled": ";mark; Säilyvät roolit on poistettu käytöstä. Entisten jäsenten tallennetut roolit poistettiin.",
+        "bot_missing_manage_roles": ";warning; Botilla ei ole Hallitse rooleja -oikeutta, joten se ei voi vielä palauttaa rooleja.",
+        "role_not_allowed": ";no; Tätä roolia ei voi säilyttää (@everyone ja integraatioroolit eivät ole tuettuja).",
+        "role_too_high_for_bot": ";no; Botti ei voi palauttaa roolia {role}: se ei ole botin korkeimman roolin alapuolella.",
+        "already_in_list": ";no; {role} on jo luettelossa.",
+        "role_added": ";mark; {role} lisättiin luetteloon.",
+        "not_in_list": ";no; {role} ei ole luettelossa.",
+        "role_removed": ";mark; {role} poistettiin luettelosta.",
+        "list_now_empty": ";warning; Luettelo on nyt tyhjä, joten **kaikki** roolit säilytetään.",
+        "list_title": ";theater_masks; Säilyvät roolit",
+        "field_status": "Tila",
+        "field_roles": "Säilytettävät roolit",
+        "status_on": "Käytössä",
+        "status_off": "Pois käytöstä",
+        "mode_all": "Kaikki roolit säilytetään (luettelo on tyhjä).",
+        "unknown_role": "tuntematon rooli",
+        "footer_unassignable": "⚠️ — botti ei voi antaa tätä roolia (se ei ole botin korkeimman roolin alapuolella tai Hallitse rooleja -oikeus puuttuu).",
+        "audit_reason": "Säilyvät roolit: jäsen palasi",
+        "logs": {
+            "restored_title": ";theater_masks; Roolit palautettu",
+            "failed_title": ";warning; Rooleja ei voitu palauttaa",
+            "no_manage_roles": "Botilla ei ole Hallitse rooleja -oikeutta."
         }
     }
 }

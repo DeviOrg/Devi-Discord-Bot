@@ -56,7 +56,8 @@
                 "Warnings": "Warnings (bot.Warnings)",
                 "MusicBlackList": "Music Blacklist (bot.MusicBlackList)",
                 "ManageLogs": "Manage Logs (bot.ManageLogs)",
-                "ManageHoneypots": "Manage Honeypots (bot.ManageHoneypots)"
+                "ManageHoneypots": "Manage Honeypots (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Manage Sticky Roles (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Add a caption to media"
+        },
+        "sticky_roles": {
+            "description": "Manage sticky roles (restore roles after a member rejoins)."
+        },
+        "sticky_roles_enable": {
+            "description": "Turn sticky roles on or off for this server.",
+            "param_enable_name": "enable",
+            "param_enable": "True - turn on, False - turn off (default: False)."
+        },
+        "sticky_roles_add": {
+            "description": "Add a role to the list of roles that are kept.",
+            "param_role_name": "role",
+            "param_role": "The role to keep."
+        },
+        "sticky_roles_remove": {
+            "description": "Remove a role from the list of kept roles.",
+            "param_role_name": "role",
+            "param_role": "The role to stop keeping."
+        },
+        "sticky_roles_list": {
+            "description": "Show the sticky roles settings and the list of kept roles."
         }
     },
     "help": {
@@ -635,6 +657,11 @@
             "developer": {
                 "name": "Developer",
                 "value": "• /guild_info\n• /ai debug\n• /birthday congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Sticky roles",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**What are sticky roles?**\nWhen a member leaves the server, the bot remembers their roles and gives them back when the member returns.\n\n**How to set up?**\n1. Turn it on: /sticky_roles enable\n2. By default **all** roles are kept. To keep only some, add them with /sticky_roles add. Once the list is empty again, all roles are kept.\n\nThe bot needs the Manage Roles permission and can only give roles below its own top role. Integration roles and temporary roles are never restored."
             }
         }
     },
@@ -1317,7 +1344,8 @@
             "voice": "Temporary voice channels",
             "triggers": "Triggers",
             "honeypot": "Honeypot",
-            "language": "Language"
+            "language": "Language",
+            "sticky_roles": "Sticky roles"
         }
     },
     "playlist_cog": {
@@ -1401,6 +1429,32 @@
             "on": "On the meme",
             "top": "Top",
             "bottom": "Bottom"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Sticky roles are enabled.",
+        "disabled": ";mark; Sticky roles are disabled. Saved roles of former members were deleted.",
+        "bot_missing_manage_roles": ";warning; The bot does not have the Manage Roles permission, so it cannot restore roles yet.",
+        "role_not_allowed": ";no; This role cannot be kept (@everyone and integration roles are not supported).",
+        "role_too_high_for_bot": ";no; The bot cannot give {role} back: it is not below the bot's top role.",
+        "already_in_list": ";no; {role} is already in the list.",
+        "role_added": ";mark; {role} added to the list.",
+        "not_in_list": ";no; {role} is not in the list.",
+        "role_removed": ";mark; {role} removed from the list.",
+        "list_now_empty": ";warning; The list is empty now, so **all** roles are kept.",
+        "list_title": ";theater_masks; Sticky roles",
+        "field_status": "Status",
+        "field_roles": "Kept roles",
+        "status_on": "Enabled",
+        "status_off": "Disabled",
+        "mode_all": "All roles are kept (the list is empty).",
+        "unknown_role": "unknown role",
+        "footer_unassignable": "⚠️ — the bot cannot give this role (it is not below the bot's top role, or Manage Roles is missing).",
+        "audit_reason": "Sticky roles: member returned",
+        "logs": {
+            "restored_title": ";theater_masks; Sticky roles restored",
+            "failed_title": ";warning; Sticky roles could not be restored",
+            "no_manage_roles": "The bot does not have the Manage Roles permission."
         }
     }
 }

@@ -56,7 +56,8 @@
                 "Warnings": "Предупреждения (bot.Warnings)",
                 "MusicBlackList": "Черен списък за музика (bot.MusicBlackList)",
                 "ManageLogs": "Управление на логове (bot.ManageLogs)",
-                "ManageHoneypots": "Управление на honeypot каналите (bot.ManageHoneypots)"
+                "ManageHoneypots": "Управление на honeypot каналите (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Управление на запазването на роли (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Добавяне на надпис към медия"
+        },
+        "sticky_roles": {
+            "description": "Управление на запазването на роли (връщане на ролите след повторно влизане)."
+        },
+        "sticky_roles_enable": {
+            "description": "Включване или изключване на запазването на роли на този сървър.",
+            "param_enable_name": "включване",
+            "param_enable": "True — включване, False — изключване (по подразбиране False)."
+        },
+        "sticky_roles_add": {
+            "description": "Добавяне на роля към списъка със запазвани роли.",
+            "param_role_name": "роля",
+            "param_role": "Ролята, която да се запазва."
+        },
+        "sticky_roles_remove": {
+            "description": "Премахване на роля от списъка със запазвани роли.",
+            "param_role_name": "роля",
+            "param_role": "Ролята, която вече да не се запазва."
+        },
+        "sticky_roles_list": {
+            "description": "Показване на настройките и списъка със запазвани роли."
         }
     },
     "help": {
@@ -635,6 +657,11 @@
             "developer": {
                 "name": "Разработчик",
                 "value": "• /guild_info\n• /ai_debug\n• /birthday_congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Запазване на роли",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**Какво е запазване на роли?**\nКогато член напусне сървъра, ботът запомня ролите му и ги връща, когато той се върне.\n\n**Как да се настрои?**\n1. Включете: /sticky_roles enable\n2. По подразбиране се запазват **всички** роли. За да запазвате само някои, добавете ги с /sticky_roles add. Когато списъкът отново е празен, се запазват всички роли.\n\nБотът има нужда от правото „Управление на роли“ и може да дава само роли под най-високата си роля. Ролите на интеграции и временните роли никога не се възстановяват."
             }
         }
     },
@@ -1316,7 +1343,8 @@
             "voice": "Временни гласови канали",
             "triggers": "Тригери",
             "honeypot": "Канал-капан",
-            "language": "Език"
+            "language": "Език",
+            "sticky_roles": "Запазване на роли"
         }
     },
     "playlist_cog": {
@@ -1400,6 +1428,32 @@
             "on": "Върху мема",
             "top": "Отгоре",
             "bottom": "Отдолу"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Запазването на роли е включено.",
+        "disabled": ";mark; Запазването на роли е изключено. Запазените роли на бивши членове са изтрити.",
+        "bot_missing_manage_roles": ";warning; Ботът няма право „Управление на роли“, затова още не може да връща роли.",
+        "role_not_allowed": ";no; Тази роля не може да се запазва (@everyone и ролите на интеграции не се поддържат).",
+        "role_too_high_for_bot": ";no; Ботът не може да върне {role}: ролята не е под най-високата роля на бота.",
+        "already_in_list": ";no; {role} вече е в списъка.",
+        "role_added": ";mark; {role} е добавена към списъка.",
+        "not_in_list": ";no; {role} не е в списъка.",
+        "role_removed": ";mark; {role} е премахната от списъка.",
+        "list_now_empty": ";warning; Списъкът вече е празен, затова се запазват **всички** роли.",
+        "list_title": ";theater_masks; Запазване на роли",
+        "field_status": "Състояние",
+        "field_roles": "Запазвани роли",
+        "status_on": "Включено",
+        "status_off": "Изключено",
+        "mode_all": "Запазват се всички роли (списъкът е празен).",
+        "unknown_role": "неизвестна роля",
+        "footer_unassignable": "⚠️ — ботът не може да даде тази роля (не е под най-високата му роля или липсва правото „Управление на роли“).",
+        "audit_reason": "Запазване на роли: членът се върна",
+        "logs": {
+            "restored_title": ";theater_masks; Ролите са възстановени",
+            "failed_title": ";warning; Ролите не можаха да бъдат възстановени",
+            "no_manage_roles": "Ботът няма право „Управление на роли“."
         }
     }
 }

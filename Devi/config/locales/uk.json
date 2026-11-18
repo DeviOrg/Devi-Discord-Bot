@@ -56,7 +56,8 @@
                 "Warnings": "Попередження (bot.Warnings)",
                 "MusicBlackList": "Чорний список музики (bot.MusicBlackList)",
                 "ManageLogs": "Керування логіми (bot.ManageLogs)",
-                "ManageHoneypots": "Керування каналами-ловушками (bot.ManageHoneypots)"
+                "ManageHoneypots": "Керування каналами-ловушками (bot.ManageHoneypots)",
+                "ManageStickyRoles": "Керування збереженням ролей (bot.ManageStickyRoles)"
             }
         },
         "permissions_manage_message": {
@@ -553,6 +554,27 @@
         },
         "caption": {
             "name": "Додати підпис до медіа"
+        },
+        "sticky_roles": {
+            "description": "Керування збереженням ролей (повернення ролей після повторного входу на сервер)."
+        },
+        "sticky_roles_enable": {
+            "description": "Увімкнути або вимкнути збереження ролей на цьому сервері.",
+            "param_enable_name": "увімкнути",
+            "param_enable": "True — увімкнути, False — вимкнути (за замовчуванням False)."
+        },
+        "sticky_roles_add": {
+            "description": "Додати роль до списку ролей, що зберігаються.",
+            "param_role_name": "роль",
+            "param_role": "Роль, яку потрібно зберігати."
+        },
+        "sticky_roles_remove": {
+            "description": "Прибрати роль зі списку ролей, що зберігаються.",
+            "param_role_name": "роль",
+            "param_role": "Роль, яку більше не потрібно зберігати."
+        },
+        "sticky_roles_list": {
+            "description": "Показати налаштування збереження ролей і список ролей."
         }
     },
     "help": {
@@ -635,6 +657,11 @@
             "developer": {
                 "name": "Розробник",
                 "value": "• /guild_info\n• /ai_debug\n• /birthday_congratulate\n• /reload"
+            },
+            "sticky_roles": {
+                "name": ";theater_masks; Збереження ролей",
+                "value": "• /sticky_roles enable\n• /sticky_roles add\n• /sticky_roles remove\n• /sticky_roles roles",
+                "additional": "**Що таке збереження ролей?**\nКоли учасник залишає сервер, бот запам'ятовує його ролі та повертає їх, коли учасник заходить знову.\n\n**Як налаштувати?**\n1. Увімкніть: /sticky_roles enable\n2. За замовчуванням зберігаються **всі** ролі. Щоб зберігати лише деякі, додайте їх через /sticky_roles add. Коли список знову стане порожнім, зберігаються всі ролі.\n\nБоту потрібне право «Керувати ролями», і він може видавати лише ролі нижче своєї найвищої ролі. Ролі інтеграцій і тимчасові ролі не відновлюються."
             }
         }
     },
@@ -1317,7 +1344,8 @@
             "voice": "Тимчасові голосові канали",
             "triggers": "Тригери",
             "honeypot": "Канал-пастка",
-            "language": "Мова"
+            "language": "Мова",
+            "sticky_roles": "Збереження ролей"
         }
     },
     "playlist_cog": {
@@ -1401,6 +1429,32 @@
             "on": "На мемі",
             "top": "Зверху",
             "bottom": "Знизу"
+        }
+    },
+    "sticky_roles_cog": {
+        "enabled": ";mark; Збереження ролей увімкнено.",
+        "disabled": ";mark; Збереження ролей вимкнено. Збережені ролі колишніх учасників видалено.",
+        "bot_missing_manage_roles": ";warning; У бота немає права «Керувати ролями», тому він поки не зможе повертати ролі.",
+        "role_not_allowed": ";no; Цю роль не можна зберігати (@everyone та ролі інтеграцій не підтримуються).",
+        "role_too_high_for_bot": ";no; Бот не зможе повернути {role}: ця роль не нижча за найвищу роль бота.",
+        "already_in_list": ";no; {role} вже в списку.",
+        "role_added": ";mark; {role} додано до списку.",
+        "not_in_list": ";no; {role} немає в списку.",
+        "role_removed": ";mark; {role} прибрано зі списку.",
+        "list_now_empty": ";warning; Список тепер порожній, тому зберігаються **всі** ролі.",
+        "list_title": ";theater_masks; Збереження ролей",
+        "field_status": "Статус",
+        "field_roles": "Ролі, що зберігаються",
+        "status_on": "Увімкнено",
+        "status_off": "Вимкнено",
+        "mode_all": "Зберігаються всі ролі (список порожній).",
+        "unknown_role": "невідома роль",
+        "footer_unassignable": "⚠️ — бот не може видати цю роль (вона не нижча за найвищу роль бота або немає права «Керувати ролями»).",
+        "audit_reason": "Збереження ролей: учасник повернувся",
+        "logs": {
+            "restored_title": ";theater_masks; Ролі відновлено",
+            "failed_title": ";warning; Не вдалося відновити ролі",
+            "no_manage_roles": "У бота немає права «Керувати ролями»."
         }
     }
 }

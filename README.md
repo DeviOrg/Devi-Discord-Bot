@@ -30,6 +30,7 @@ A multifunctional Discord bot built on [disnake](https://github.com/DisnakeDev/d
 | 🎂 | Birthday tracking                                  |
 | 💬 | AI assistant powered by ProxyAPI, DeepSeek or Qwen |
 | 🛡 | Honeypot channels                                  |
+| 🎭 | Sticky roles (roles survive leaving and rejoining) |
 
 ## Configuration
 
@@ -71,6 +72,7 @@ The bot uses its own custom permission system, independent of Discord's native r
 | `Send`                                 | Send messages in servers and DMs on behalf of the bot                                                                |
 | `Giveaways`                            | Manage giveaways                                                                                                     |
 | `Warnings`                             | Manage warnings                                                                                                      |
+| `ManageStickyRoles`                    | Configure sticky roles                                                                                               |
 | `Admin` (and `SpecialAdminPermission`) | Administrative permission set — grants all permissions except blacklist permissions                                  |
 | `Developer`                            | Developer permission set. Does **not** include `Admin`. Cannot be granted via command — hardcoded by Discord user ID |
 
@@ -498,6 +500,7 @@ Changes go through the same in-memory caches and checks as the slash commands (t
 |-------------------------------------------|--------------------------------------------|
 | Permissions, logs, birthdays, voice lobby | `bot.Admin` or Discord `Administrator`     |
 | Honeypot, language                        | `bot.Admin` or Discord `Administrator`     |
+| Sticky roles                              | `bot.ManageStickyRoles` or `Administrator` |
 | Triggers                                  | `bot.ManageTriggers` or `Administrator`    |
 
 Every change is also written to the server's log channel.
@@ -512,6 +515,7 @@ Enable it by setting `DASHBOARD_API_TOKEN` (24+ characters) in `config/.env`; us
 | `PUT /v1/guilds/{id}/birthday-channel`                          | Set or clear the birthday channel                                           |
 | `PUT /v1/guilds/{id}/temp-voice`                                | Set or clear the lobby channel, category and name template                  |
 | `PUT /v1/guilds/{id}/honeypot`                                  | Set or clear the honeypot channel and its punishment and duration           |
+| `PUT /v1/guilds/{id}/sticky-roles`                              | Turn sticky roles on/off and replace the role list (`enabled`, `role_ids`)  |
 | `PUT /v1/guilds/{id}/language`                                  | Set the server language (`locale`)                                          |
 | `PATCH /v1/guilds/{id}/permissions`                             | Set permission masks for the server, roles, channels and users              |
 | `GET /v1/guilds/{id}/members?q=`                                | Search members by name or id                                                |
@@ -609,6 +613,7 @@ bot_project/
         ├── utils.py                     # /random, /coin, /ball, /qr, /preview, /avatar
         ├── warns.py                   # /warn commands + logic
         ├── temp_roles.py              # /temp_role + logic
+        ├── sticky_roles.py            # /sticky_roles + restore on rejoin
         ├── clear.py                   # /clear
         ├── logging_events.py          # Logging logic
         ├── permissions_commands.py    # /permissions commands
