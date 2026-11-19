@@ -1456,5 +1456,10 @@
             "failed_title": ";warning; No se pudieron restaurar los roles",
             "no_manage_roles": "El bot no tiene el permiso «Administrar roles»."
         }
+    },
+    "welcome_cog": {
+        "channel": ";party; **¡Gracias por agregar a Devi!**\nTodo está listo. Abre el panel de control para configurar a Devi en **{guild_name}** o usa `/help` para ver todo lo que puede hacer.",
+        "dm": ";party; **¡Gracias por agregar a Devi a {guild_name}!**\nAbre el panel de control y configura el bot para tu comunidad: solo toma un par de minutos. Todos los comandos están en `/help`.",
+        "open_dashboard": "Abrir panel de control"
     }
 }

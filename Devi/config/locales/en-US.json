@@ -1456,5 +1456,10 @@
             "failed_title": ";warning; Sticky roles could not be restored",
             "no_manage_roles": "The bot does not have the Manage Roles permission."
         }
+    },
+    "welcome_cog": {
+        "channel": ";party; **Thank you for adding Devi!**\nEverything is ready to go. Open the dashboard to set Devi up for **{guild_name}**, or use `/help` to see what it can do.",
+        "dm": ";party; **Thank you for adding Devi to {guild_name}!**\nOpen the dashboard to set the bot up for your community — it only takes a couple of minutes. `/help` lists every command.",
+        "open_dashboard": "Open dashboard"
     }
 }

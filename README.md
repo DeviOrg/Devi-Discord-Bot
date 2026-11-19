@@ -606,7 +606,8 @@ bot_project/
         ├── captions/                  # Add caption to media (message_command)
         │   ├── __init__.py
         │   ├── renderer.py 
-        │   └── captions.py      
+        │   └── captions.py
+        ├── welcome.py                 # welcome message      
         ├── admin.py                   # /set_log_channel, /set_language
         ├── mentions.py                # /mention commands
         ├── triggers.py                # /trigger, /triggers + trigger logic

@@ -1456,5 +1456,10 @@
             "failed_title": ";warning; Rooleja ei voitu palauttaa",
             "no_manage_roles": "Botilla ei ole Hallitse rooleja -oikeutta."
         }
+    },
+    "welcome_cog": {
+        "channel": ";party; **Kiitos, kun lisäsit Devin!**\nKaikki on valmista. Avaa hallintapaneeli ja määritä Devi palvelimelle **{guild_name}** tai katso kaikki ominaisuudet komennolla `/help`.",
+        "dm": ";party; **Kiitos, kun lisäsit Devin palvelimelle {guild_name}!**\nAvaa hallintapaneeli ja määritä botti yhteisöäsi varten – siihen menee vain pari minuuttia. Kaikki komennot näet komennolla `/help`.",
+        "open_dashboard": "Avaa hallintapaneeli"
     }
 }

@@ -61,6 +61,7 @@ EXTENSIONS = [
     "cogs.gif",
     "cogs.captions",
     "cogs.sticky_roles",
+    "cogs.welcome",
 ]
 
 for extension in EXTENSIONS:

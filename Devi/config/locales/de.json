@@ -1455,5 +1455,10 @@
             "failed_title": ";warning; Rollen konnten nicht wiederhergestellt werden",
             "no_manage_roles": "Dem Bot fehlt die Berechtigung „Rollen verwalten“."
         }
+    },
+    "welcome_cog": {
+        "channel": ";party; **Danke, dass du Devi hinzugefügt hast!**\nAlles ist bereit. Öffne das Dashboard, um Devi für **{guild_name}** einzurichten, oder nutze `/help`, um alle Funktionen zu sehen.",
+        "dm": ";party; **Danke, dass du Devi zu {guild_name} hinzugefügt hast!**\nÖffne das Dashboard und richte den Bot für deine Community ein – das dauert nur ein paar Minuten. Alle Befehle findest du mit `/help`.",
+        "open_dashboard": "Dashboard öffnen"
     }
 }
